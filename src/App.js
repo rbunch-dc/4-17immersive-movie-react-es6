@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import './App.css';
 import $ from 'jquery';
 import Poster from './Poster';
+import SearchBar from './SearchBar'
 
 class App extends Component {
   constructor(props) {
@@ -13,6 +14,7 @@ class App extends Component {
     this.state = {
       moviePosters: []
     }
+    this.handleSearch = this.handleSearch.bind(this)
   }
   // componentDidMount runs AFTER the frist render
 	componentDidMount() {
@@ -30,6 +32,20 @@ class App extends Component {
     console.log("Waiting on AJAX...")
   }
 
+  handleSearch(value){
+    // console.dir(value);
+    var url = 'https://api.themoviedb.org/3/search/movie?api_key=fec8b5ab27b292a68294261bb21b04a5&query='+value
+    $.getJSON(url, (movieData)=>{
+        console.log(movieData);
+        // Changing state will trigger a re-render (i.e., render will run again)
+        this.setState({
+          moviePosters:movieData.results
+        })
+        // NEVER EVER change state directly
+        // this.state.moviePosters = movieData.resuls ---- BAD!!!!!
+    });
+  }  
+
   // EVERY component must have a render member method
 	render() {
     var postersArray = [];
@@ -42,20 +58,11 @@ class App extends Component {
       return
     });
 
-    // After componentDIdMount is finished changeing state, postoersArray looks like this:
-    // postersArray = [
-    //   <Poster poster={poster} key={index} />,
-    //   <Poster poster={poster} key={index} />,
-    //   <Poster poster={poster} key={index} />,
-    //   <Poster poster={poster} key={index} />,
-    //   <Poster poster={poster} key={index} />
-    // ]
-
-
 		return (
 			<div className="App">
 
 				<h1>This is the movie app (again...)</h1>
+        <SearchBar searchFunction={this.handleSearch} />
         {postersArray}
 			</div>
 		);
